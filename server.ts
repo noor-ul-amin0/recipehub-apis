@@ -1,15 +1,17 @@
 import express, { Express, Request, Response } from "express";
+import cors from "cors";
 import { client } from "./src/config/db";
 
 const app: Express = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/", async (req: Request, res: Response) => {
   try {
     const query = await client.query("SELECT * FROM recipes");
-    res.status(200).send(query.rows);
+    res.status(200).send({ success: true, data: query.rows });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ success: false, message: error });
   }
 });
 
@@ -30,4 +32,3 @@ app.listen(port, () => {
     console.log("Database connection failed", error);
   }
 })();
-
