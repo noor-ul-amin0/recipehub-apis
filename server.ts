@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from "express";
-import { client } from "./config/db";
+import { client } from "./src/config/db";
 
 const app: Express = express();
 app.use(express.json());
@@ -30,3 +30,4 @@ app.listen(port, () => {
     console.log("Database connection failed", error);
   }
 })();
+

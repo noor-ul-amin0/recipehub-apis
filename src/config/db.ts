@@ -1,9 +1,17 @@
 import { Client } from "pg";
+import dotenv from "dotenv";
+
+dotenv.config(); // Loads environment variables from .env file
+
+// Parse the port value as a number
+const port: number | undefined = process.env.DB_PORT
+  ? parseInt(process.env.DB_PORT)
+  : undefined;
 
 export const client = new Client({
-  host: "localhost",
-  port: 5432,
-  database: "Recipehub",
-  user: "postgres",
-  password: "12345",
+  host: process.env.DB_HOST,
+  port,
+  database: process.env.DB_DATABASE,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
