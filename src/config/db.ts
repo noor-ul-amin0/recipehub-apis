@@ -15,3 +15,11 @@ export const client = new Client({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
 });
+export async function connectDB() {
+  try {
+    await client.connect();
+    console.log("Database connected");
+  } catch (error) {
+    console.log("Database connection failed", error);
+  }
+}
