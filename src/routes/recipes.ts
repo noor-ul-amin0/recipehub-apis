@@ -4,15 +4,13 @@ import { client } from "../config/db";
 const router = express.Router();
 
 router
-  .route("/api/recipes")
+  .route("/")
   .get(async (req: Request, res: Response) => {
     try {
       const query = await client.query("SELECT * FROM recipes");
       res.status(200).send({ success: true, data: query.rows });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
-    } finally {
-      client.end();
     }
   })
   .post(async (req: Request, res: Response) => {
@@ -34,8 +32,6 @@ router
       res.status(201).send({ success: true, message: "Recipe created" });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
-    } finally {
-      client.end();
     }
   });
 
