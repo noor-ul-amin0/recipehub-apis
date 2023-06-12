@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.ts",
-    "setup-database": "ts-node scripts/setup-database.ts"
+    "db:migrate": "ts-node scripts/setup-database.ts"
   },
   "author": "Noor Ul Amin",
   "license": "ISC",
