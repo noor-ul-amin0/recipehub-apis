@@ -7,8 +7,19 @@ router
   .route("/")
   .get(async (req: Request, res: Response) => {
     try {
-      const query = await client.query("SELECT * FROM recipes");
-      res.status(200).send({ success: true, data: query.rows });
+      const { search } = req.query;
+      let query = null;
+      if (search) {
+        const searchQuery = `
+      SELECT *
+      FROM recipes
+      WHERE to_tsvector(title || ' ' || description || ' ' || array_to_string(ingredients,'') || ' ' || array_to_string(directions,'')) @@ plainto_tsquery($1)
+    `;
+        query = await client.query(searchQuery, [search]);
+      } else query = await client.query("SELECT * FROM recipes");
+      res
+        .status(200)
+        .send({ success: true, count: query.rowCount, data: query.rows });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
     }
