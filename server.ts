@@ -1,5 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
+import expressWinston from "express-winston";
+import winston from "winston";
 import routes from "./src/routes";
 import { connectDB } from "./src/config/db";
 
@@ -9,6 +11,17 @@ app.use(express.json());
 
 // Connect to database
 connectDB();
+
+// express-winston logger
+app.use(
+  expressWinston.logger({
+    transports: [new winston.transports.Console()],
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.json()
+    ),
+  })
+);
 
 // Routes
 app.use("/", routes);
