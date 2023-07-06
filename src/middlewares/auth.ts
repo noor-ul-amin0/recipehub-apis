@@ -1,17 +1,18 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { getBearerToken, verifyToken } from "../helpers/auth";
 import { RequestWithUser, TokenUser } from "../types/user";
 import { JwtPayload } from "jsonwebtoken";
+import userRepository from "../repositories/users";
 
 export interface JwtPayloadWithUser extends JwtPayload {
   user: TokenUser;
 }
 
-export function authenticate(
+export async function authenticate(
   req: RequestWithUser,
   res: Response,
   next: NextFunction
-): void {
+): Promise<void> {
   const token = getBearerToken(req);
 
   if (!token) {
@@ -22,6 +23,11 @@ export function authenticate(
   try {
     let decodedToken: JwtPayloadWithUser;
     decodedToken = verifyToken(token) as JwtPayloadWithUser;
+    const user = await userRepository.findByEmail(decodedToken.user.email);
+    if (!user || user.id !== decodedToken.user.id) {
+      res.status(401).send({ success: false, message: "Unauthorized" });
+      return;
+    }
     req.user = decodedToken.user;
     next();
   } catch (error) {
