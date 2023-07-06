@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS recipes (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
   description TEXt NOT NULL,
   ingredients VARCHAR[] NOT NULL,
   directions VARCHAR[] NOT NULL,
@@ -43,7 +44,17 @@ END $$;
 ALTER TABLE recipes
 DROP CONSTRAINT IF EXISTS fk_user_id;
 
--- Add the composite unique constraint to the recipes table
-ALTER TABLE recipes
-ADD CONSTRAINT unique_user_title
-UNIQUE (user_id, title);
+-- Check if the constraint already exists before adding it
+DO $$BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'unique_user_title'
+      AND conrelid = 'recipes'::regclass
+  ) THEN
+    -- Add the constraint if it does not already exist
+    ALTER TABLE recipes
+    ADD CONSTRAINT unique_user_title
+    UNIQUE (user_id, title);
+  END IF;
+END$$;
