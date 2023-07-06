@@ -1,7 +1,7 @@
 -- create-tables.sql
 CREATE TABLE IF NOT EXISTS recipes (
   id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL UNIQUE,
+  title VARCHAR(255) NOT NULL,
   description TEXt NOT NULL,
   ingredients VARCHAR[] NOT NULL,
   directions VARCHAR[] NOT NULL,
@@ -37,3 +37,13 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+-- Assuming you already have the recipes table and foreign key constraint set up
+
+-- Drop the existing foreign key constraint (if any) to modify the table
+ALTER TABLE recipes
+DROP CONSTRAINT IF EXISTS fk_user_id;
+
+-- Add the composite unique constraint to the recipes table
+ALTER TABLE recipes
+ADD CONSTRAINT unique_user_title
+UNIQUE (user_id, title);
