@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { createRecipe, getRecipes } from "../controllers/recipes";
 import { authenticate } from "../middlewares/auth";
+import recipeController from "../controllers/recipes";
 const router = Router();
 
-router.route("/").all(authenticate).get(getRecipes).post(createRecipe);
+router
+  .route("/")
+  .all(authenticate)
+  .get(recipeController.getRecipes)
+  .post(recipeController.createRecipe);
 
 export default router;
