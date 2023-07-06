@@ -24,14 +24,26 @@ class RecipeRepository {
   }
 
   async create(recipe: Recipe, userId: string | number): Promise<void> {
-    const { title, description, ingredients, directions } = recipe;
-    await client.query(createRecipeQuery, [
-      title,
-      description,
-      ingredients,
-      directions,
-      userId,
-    ]);
+    try {
+      const { title, description, ingredients, directions } = recipe;
+      await client.query(createRecipeQuery, [
+        title,
+        description,
+        ingredients,
+        directions,
+        userId,
+      ]);
+      const row = await client.query(
+        `SELECT * FROM recipes WHERE title = $1 AND user_id = $2`,
+        [title, userId]
+      );
+      return row.rows[0];
+    } catch (error: any) {
+      if (error.code === "23505") {
+        throw new Error("Recipe already exists");
+      }
+      throw new Error(error.message);
+    }
   }
 }
 
