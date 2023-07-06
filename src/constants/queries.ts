@@ -7,8 +7,8 @@ export const findRecipesBySearchQuery = `
 `;
 
 export const createRecipeQuery = `
-  INSERT INTO recipes (title, description, ingredients, directions, user_id)
-  VALUES ($1, $2, $3, $4, $5)
+  INSERT INTO recipes (title, description, ingredients, directions, user_id, slug)
+  VALUES ($1, $2, $3, $4, $5, $6)
 `;
 
 export const createUserQuery = `

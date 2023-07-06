@@ -1,3 +1,4 @@
+import slugify from "slugify";
 import { client } from "../config/db";
 import {
   createRecipeQuery,
@@ -26,12 +27,14 @@ class RecipeRepository {
   async create(recipe: Recipe, userId: string | number): Promise<void> {
     try {
       const { title, description, ingredients, directions } = recipe;
+      const slug = slugify(title, { lower: true });
       await client.query(createRecipeQuery, [
         title,
         description,
         ingredients,
         directions,
         userId,
+        slug,
       ]);
       const row = await client.query(
         `SELECT * FROM recipes WHERE title = $1 AND user_id = $2`,
