@@ -3,20 +3,34 @@ import recipeRepository from "../repositories/recipes";
 import { Recipe } from "../types/recipe";
 
 class RecipeController {
+  async getRecipeBySlug(req: Request, res: Response): Promise<void> {
+    try {
+      const { slug } = req.params;
+      const recipe = await recipeRepository.findBySlug(
+        req.user?.id as number,
+        slug
+      );
+      res.status(200).send({ success: true, data: recipe });
+    } catch (error: any) {
+      res.status(500).send({ success: false, message: error.message });
+    }
+  }
+
   async getRecipes(req: Request, res: Response): Promise<void> {
     try {
       const { search } = req.query;
+      const userId = req.user?.id as number;
       let recipes: Recipe[] = [];
-      if (req.user) {
-        if (search) {
-          recipes = await recipeRepository.findBySearchQuery(
-            search as string,
-            req.user.id
-          );
-        } else {
-          recipes = await recipeRepository.findAll(req.user.id);
-        }
+
+      if (search) {
+        recipes = await recipeRepository.findBySearchQuery(
+          search as string,
+          userId
+        );
+      } else {
+        recipes = await recipeRepository.findAll(userId);
       }
+
       res.status(200).send({ success: true, data: recipes });
     } catch (error) {
       res.status(500).send({ success: false, message: error });

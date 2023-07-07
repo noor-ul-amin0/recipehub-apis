@@ -1,3 +1,5 @@
+export const findRecipeBySlug = `SELECT * FROM recipes WHERE user_id = $1 AND slug = $2`;
+
 export const findAllRecipesQuery = "SELECT * FROM recipes WHERE user_id = $1";
 
 export const findRecipesBySearchQuery = `
