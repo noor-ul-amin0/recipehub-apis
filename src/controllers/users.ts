@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
-import { CreateUser, TokenUser } from "../types/user";
+import { CreateUser, EmailToken, TokenUser } from "../types/user";
 import userRepository from "../repositories/users";
-import { generateToken, hashPassword, verifyPassword } from "../helpers/auth";
-
+import {
+  generateToken,
+  hashPassword,
+  verifyEmailToken,
+  verifyPassword,
+} from "../helpers/auth";
+import mailService from "../services/mail";
 class UsersController {
   async signin(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
@@ -16,7 +21,12 @@ class UsersController {
           .send({ success: false, message: "Invalid email or password" });
         return;
       }
-
+      if (!user.is_verified) {
+        res
+          .status(401)
+          .send({ success: false, message: "Please verify your email" });
+        return;
+      }
       // Check if the password is correct
       const passwordMatch = await verifyPassword(password, user.password);
       if (!passwordMatch) {
@@ -52,9 +62,12 @@ class UsersController {
       // Check if the user already exists
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser) {
-        res
-          .status(409)
-          .send({ success: false, message: "User already exists" });
+        res.status(409).send({
+          success: false,
+          message: existingUser.is_verified
+            ? "User already exists"
+            : "Your account already exist but not verified, Please verify your account",
+        });
         return;
       }
 
@@ -65,15 +78,50 @@ class UsersController {
         email,
         password: hashedPassword,
       };
-      debugger;
+
+      // Send verification email with JWT token
+      const payload: EmailToken = {
+        full_name: newUser.full_name,
+        email: newUser.email,
+      };
+      await mailService.sendVerificationEmail(payload);
       // Create a new user
       await userRepository.create(newUser);
 
-      res
-        .status(201)
-        .send({ success: true, message: "User registered successfully" });
+      res.status(201).send({
+        success: true,
+        message:
+          "A verification email has been sent to your email address. Please verify it.",
+      });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
+    }
+  }
+
+  async verifyEmail(req: Request, res: Response): Promise<void | string> {
+    try {
+      const token: string = req.params.token;
+      const decodedToken = verifyEmailToken(token);
+      const user = await userRepository.findOne({
+        full_name: decodedToken.user.full_name,
+        email: decodedToken.user.email,
+        is_verified: false,
+      });
+
+      if (!user) {
+        res.status(400).send("Something went wrong");
+        return;
+      }
+
+      if (user) {
+        await userRepository.updateOne(
+          { id: user.id, email: user.email },
+          { is_verified: true }
+        );
+      }
+      res.send("Your email has been verified, kindly log in");
+    } catch (error: any) {
+      res.status(500).send({ success: false, message: error.message });
     }
   }
 }

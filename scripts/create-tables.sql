@@ -58,3 +58,20 @@ DO $$BEGIN
     UNIQUE (user_id, title);
   END IF;
 END$$;
+
+-- Check if the column already exists in the users table
+DO
+$$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'users'
+    AND column_name = 'is_verified'
+  )
+  THEN
+    -- Add the is_verified column to the users table
+    ALTER TABLE users ADD COLUMN is_verified BOOLEAN NOT NULL DEFAULT FALSE;
+  END IF;
+END;
+$$;

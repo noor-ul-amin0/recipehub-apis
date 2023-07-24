@@ -1,13 +1,15 @@
 import { Response, NextFunction } from "express";
 import { getBearerToken, verifyToken } from "../helpers/auth";
-import { RequestWithUser, TokenUser } from "../types/user";
+import { EmailToken, RequestWithUser, TokenUser } from "../types/user";
 import { JwtPayload } from "jsonwebtoken";
 import userRepository from "../repositories/users";
 
 export interface JwtPayloadWithUser extends JwtPayload {
   user: TokenUser;
 }
-
+export interface JwtPayloadWithVerifyEmailUser extends JwtPayload {
+  user: EmailToken;
+}
 export async function authenticate(
   req: RequestWithUser,
   res: Response,

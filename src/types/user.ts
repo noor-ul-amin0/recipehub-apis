@@ -4,6 +4,7 @@ export type User = {
   full_name: string;
   email: string;
   password: string;
+  is_verified: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -17,7 +18,10 @@ export type TokenUser = {
   full_name: string;
   email: string;
 };
-
+export type EmailToken = {
+  full_name: string;
+  email: string;
+};
 export interface RequestWithUser extends Request {
   user?: TokenUser;
 }

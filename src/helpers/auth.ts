@@ -1,8 +1,11 @@
 import { Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { hash, compare } from "bcryptjs";
-import { TokenUser } from "../types/user";
-import { JwtPayloadWithUser } from "../middlewares/auth";
+import { EmailToken, TokenUser } from "../types/user";
+import {
+  JwtPayloadWithUser,
+  JwtPayloadWithVerifyEmailUser,
+} from "../middlewares/auth";
 
 export async function hashPassword(password: string): Promise<string> {
   const hashedPassword = await hash(password, 12);
@@ -24,6 +27,13 @@ export const generateToken = (user: TokenUser): string => {
   return token;
 };
 
+export const generateVerificationEmailToken = (user: EmailToken): string => {
+  const token = jwt.sign({ user }, process.env.JWT_SECRET as string, {
+    expiresIn: "1h",
+  });
+  return token;
+};
+
 export const verifyToken = (token: string): JwtPayloadWithUser | string => {
   try {
     const decoded = jwt.verify(
@@ -33,6 +43,20 @@ export const verifyToken = (token: string): JwtPayloadWithUser | string => {
     return decoded;
   } catch (error) {
     throw new Error("Invalid token");
+  }
+};
+
+export const verifyEmailToken = (
+  token: string
+): JwtPayloadWithVerifyEmailUser => {
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as JwtPayloadWithVerifyEmailUser;
+    return decoded;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 };
 
