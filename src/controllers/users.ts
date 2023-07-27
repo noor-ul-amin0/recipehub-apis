@@ -7,7 +7,9 @@ import {
   verifyEmailToken,
   verifyPassword,
 } from "../helpers/auth";
-import mailService from "../services/mail";
+import EmailWorker from "../message_queues/email_worker";
+import { EmailNotificationQueueKeys } from "../message_queues/queue_keys";
+
 class UsersController {
   async signin(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
@@ -84,7 +86,15 @@ class UsersController {
         full_name: newUser.full_name,
         email: newUser.email,
       };
-      await mailService.sendVerificationEmail(payload);
+
+      // * Enqueue the verification email to the email  worker
+      const emailWorkerInstance = new EmailWorker();
+      await emailWorkerInstance.setup(
+        EmailNotificationQueueKeys.SIGNUP_NOTIFICATION
+      );
+      await emailWorkerInstance.enqueueSignUpNotificationJob(payload);
+      // emailWorkerInstance.close();
+
       // Create a new user
       await userRepository.create(newUser);
 
@@ -93,6 +103,15 @@ class UsersController {
         message:
           "A verification email has been sent to your email address. Please verify it.",
       });
+    } catch (error) {
+      res.status(500).send({ success: false, message: error });
+    }
+  }
+
+  async getUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const users = await userRepository.findAll({});
+      res.status(200).send({ success: true, data: users });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
     }
