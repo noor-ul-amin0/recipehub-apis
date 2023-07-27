@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import recipeRepository from "../repositories/recipes";
 import { Recipe } from "../types/recipe";
+import EmailWorker from "../message_queues/email_worker";
+import { EmailNotificationQueueKeys } from "../message_queues/queue_keys";
 
 class RecipeController {
   async getRecipeBySlug(req: Request, res: Response): Promise<void> {
@@ -61,7 +63,18 @@ class RecipeController {
       return;
     }
     try {
-      const recipe = await recipeRepository.create(req.body, req.user.id);
+      const recipe: Recipe = await recipeRepository.create(
+        req.body,
+        req.user.id
+      );
+      // * Enqueue the email notification to all the users subscribed to the recipe (worker)
+      const emailWorkerInstance = new EmailWorker();
+      await emailWorkerInstance.setup(
+        EmailNotificationQueueKeys.RECIPE_NOTIFICATION
+      );
+      await emailWorkerInstance.enqueueRecipeCreationEmailNotificationJob(
+        recipe
+      );
       res
         .status(201)
         .send({ success: true, message: "Recipe created", data: recipe });
