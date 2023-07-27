@@ -3,6 +3,8 @@ import userController from "../controllers/users";
 
 const router = Router();
 
+router.get("/", userController.getUsers);
+
 // User signup route
 router.post("/signup", userController.signup);
 
