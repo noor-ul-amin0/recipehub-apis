@@ -33,7 +33,7 @@ class RecipeRepository {
     return result.rows;
   }
 
-  async create(recipe: Recipe, userId: string | number): Promise<void> {
+  async create(recipe: Recipe, userId: string | number): Promise<Recipe> {
     try {
       const { title, description, ingredients, directions } = recipe;
       const slug = slugify(title, { lower: true });
@@ -46,7 +46,7 @@ class RecipeRepository {
         slug,
       ]);
       const row = await client.query(
-        `SELECT * FROM recipes WHERE title = $1 AND user_id = $2`,
+        `SELECT * FROM recipes WHERE title = $1 AND user_id = $2 LIMIT 1`,
         [title, userId]
       );
       return row.rows[0];
