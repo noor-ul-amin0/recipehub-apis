@@ -4,6 +4,7 @@ import expressWinston from "express-winston";
 import winston from "winston";
 import routes from "./src/routes";
 import { connectDB } from "./src/config/db";
+import RabbitMQService from "./src/message_queues/RabbitMQ_service";
 
 const app: Express = express();
 app.use(cors());
@@ -24,7 +25,7 @@ app.use(
 );
 
 // Routes
-app.use("/", routes);
+app.use("/api", routes);
 
 app.use("*", (req: Request, res: Response) => {
   res.status(404).send(`${req.originalUrl} not found`);
@@ -33,4 +34,19 @@ app.use("*", (req: Request, res: Response) => {
 const port = 8080 || process.env.PORT;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  // Close the RabbitMQ connection on SIGINT
+  await RabbitMQService.getInstance().close();
+  console.log("RabbitMQ connection closed. Exiting...");
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  // Close the RabbitMQ connection on SIGTERM
+  await RabbitMQService.getInstance().close();
+  console.log("RabbitMQ connection closed. Exiting...");
+  process.exit(0);
 });
