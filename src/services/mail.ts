@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import { EmailToken } from "../types/user";
 import { generateVerificationEmailToken } from "../helpers/auth";
-
+import dotenv from "dotenv";
 class MailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
+    dotenv.config();
     this.transporter = nodemailer.createTransport({
       host: process.env.MAILTRAP_HOST,
       port: parseInt(process.env.MAILTRAP_PORT ?? "0", 10),
@@ -28,13 +29,13 @@ class MailService {
         subject: "Your Email Verification Link (valid for 1 hour)",
         message: "Write PUT request to this URL to verify your email",
         html: `
-       <center>
+          <center>
        <h2>Hello ${toUser.full_name} to the RecipeHub</h2>
        <h3>Email verification link is as follows:</h3> <br>
        <h4>Send a PUT request to this URL to verify your email</h4> <br>
        <p href="${verificationLink}">${verificationLink}</p>
        </center
-    `,
+       `,
       };
       const info = await this.transporter.sendMail(mailOptions);
       console.log("Message sent: %s", info.messageId);
