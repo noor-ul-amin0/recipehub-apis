@@ -7,7 +7,9 @@ import {
   verifyEmailToken,
   verifyPassword,
 } from "../helpers/auth";
-import mailService from "../services/mail";
+import { addEmailNotificationJob } from "../task_queues/emails/email.queue";
+import { EmailNotificationJobTypes } from "../constants/queue_keys";
+
 class UsersController {
   async signin(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
@@ -84,7 +86,10 @@ class UsersController {
         full_name: newUser.full_name,
         email: newUser.email,
       };
-      await mailService.sendVerificationEmail(payload);
+      await addEmailNotificationJob(
+        EmailNotificationJobTypes.SIGNUP_JOB,
+        payload
+      );
       // Create a new user
       await userRepository.create(newUser);
 

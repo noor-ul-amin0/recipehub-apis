@@ -11,7 +11,9 @@
   "author": "Noor Ul Amin",
   "license": "ISC",
   "dependencies": {
+    "@bull-board/express": "^5.7.0",
     "bcryptjs": "^2.4.3",
+    "bullmq": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
