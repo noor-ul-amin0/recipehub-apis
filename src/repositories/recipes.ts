@@ -24,7 +24,7 @@ class RecipeRepository {
 
   async findBySearchQuery(
     search: string,
-    userId: string | number
+    userId: string | number,
   ): Promise<Recipe[]> {
     const result = await client.query<Recipe>(findRecipesBySearchQuery, [
       search,
@@ -47,7 +47,7 @@ class RecipeRepository {
       ]);
       const row = await client.query(
         `SELECT * FROM recipes WHERE title = $1 AND user_id = $2`,
-        [title, userId]
+        [title, userId],
       );
       return row.rows[0];
     } catch (error: any) {

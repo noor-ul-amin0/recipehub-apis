@@ -31,7 +31,7 @@ class UserRepository {
 
   async updateOne(
     filter: Partial<User>,
-    update: Partial<User>
+    update: Partial<User>,
   ): Promise<QueryResult> {
     let i = 1;
     let query = `UPDATE users SET `;

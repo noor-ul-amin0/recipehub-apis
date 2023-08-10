@@ -116,7 +116,7 @@ class UsersController {
       if (user) {
         await userRepository.updateOne(
           { id: user.id, email: user.email },
-          { is_verified: true }
+          { is_verified: true },
         );
       }
       res.send("Your email has been verified, kindly log in");

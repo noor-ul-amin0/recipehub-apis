@@ -14,7 +14,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(
   password: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<boolean> {
   const isValid = await compare(password, hashedPassword);
   return isValid;
@@ -38,7 +38,7 @@ export const verifyToken = (token: string): JwtPayloadWithUser | string => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     ) as JwtPayloadWithUser;
     return decoded;
   } catch (error) {
@@ -47,12 +47,12 @@ export const verifyToken = (token: string): JwtPayloadWithUser | string => {
 };
 
 export const verifyEmailToken = (
-  token: string
+  token: string,
 ): JwtPayloadWithVerifyEmailUser => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     ) as JwtPayloadWithVerifyEmailUser;
     return decoded;
   } catch (error: any) {
