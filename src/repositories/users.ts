@@ -13,6 +13,21 @@ class UserRepository {
     );
   }
 
+  async findAll(filter?: Partial<User>): Promise<User[]> {
+    let query = `SELECT * FROM users`;
+    let queryParams: any[] = [];
+    if (filter && Object.keys(filter).length !== 0) {
+      query += " WHERE ";
+      Object.keys(filter).forEach((key, index) => {
+        if (index !== 0) query += " AND ";
+        query += `${key} = $${index + 1}`;
+        queryParams.push(filter[key as keyof User]); // Use 'keyof User' to enforce correct types.
+      });
+    }
+    const result = await client.query<User>(query, queryParams);
+    return result.rows;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const result = await client.query<User>(findUserByEmailQuery, [email]);
     return result.rows[0] || null;
