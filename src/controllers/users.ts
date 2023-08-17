@@ -84,14 +84,19 @@ class UsersController {
         full_name: newUser.full_name,
         email: newUser.email,
       };
-      await mailService.sendVerificationEmail(payload);
+      // await mailService.sendVerificationEmail(payload);
       // Create a new user
       await userRepository.create(newUser);
 
+      // res.status(201).send({
+      //   success: true,
+      //   message:
+      //     "A verification email has been sent to your email address. Please verify it.",
+      // });
+
       res.status(201).send({
         success: true,
-        message:
-          "A verification email has been sent to your email address. Please verify it.",
+        data: payload,
       });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
@@ -116,7 +121,7 @@ class UsersController {
       if (user) {
         await userRepository.updateOne(
           { id: user.id, email: user.email },
-          { is_verified: true },
+          { is_verified: true }
         );
       }
       res.send("Your email has been verified, kindly log in");
