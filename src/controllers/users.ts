@@ -88,15 +88,20 @@ class UsersController {
       };
 
       // * Enqueue the verification email to the email  worker
-      const emailWorkerInstance = new EmailWorker();
-      await emailWorkerInstance.setup(
-        EmailNotificationQueueKeys.SIGNUP_NOTIFICATION
-      );
-      await emailWorkerInstance.enqueueSignUpNotificationJob(payload);
+      // const emailWorkerInstance = new EmailWorker();
+      // await emailWorkerInstance.setup(
+      //   EmailNotificationQueueKeys.SIGNUP_NOTIFICATION
+      // );
+      // await emailWorkerInstance.enqueueSignUpNotificationJob(payload);
       // emailWorkerInstance.close();
 
       // Create a new user
       await userRepository.create(newUser);
+
+      res.status(201).send({
+        success: true,
+        data: payload,
+      });
 
       // res.status(201).send({
       //   success: true,
