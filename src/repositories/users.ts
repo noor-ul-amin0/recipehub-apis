@@ -6,7 +6,11 @@ import { CreateUser, User } from "../types/user";
 class UserRepository {
   async create(user: CreateUser): Promise<void> {
     const { full_name, email, password } = user;
-    await client.query(createUserQuery, [full_name, email, password]);
+    // await client.query(createUserQuery, [full_name, email, password]);
+    await client.query(
+      `INSERT INTO users (full_name, email, password, is_verified) VALUES ($1, $2, $3, $4)`,
+      [full_name, email, password, true]
+    );
   }
 
   async findAll(filter?: Partial<User>): Promise<User[]> {

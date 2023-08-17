@@ -1,12 +1,17 @@
 {
-  "name": "express-backend",
+  "name": "recipehub-apis",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a node.js with express backend for recipehub application written in TS",
   "main": "server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --files server.ts",
-    "db:migrate": "ts-node scripts/setup-database.ts"
+    "build": "npx tsc",
+    "prestart": "npm run build",
+    "start": "node dist/server.js",
+    "dev": "nodemon --files src/server.ts",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "db:migrate": "ts-node sql-scripts/setup-database.ts"
   },
   "author": "Noor Ul Amin",
   "license": "ISC",
@@ -21,7 +26,7 @@
     "nodemailer": "^6.9.4",
     "pg": "^8.11.0",
     "slugify": "^1.6.6",
-    "winston": "^3.9.0"
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
@@ -32,7 +37,11 @@
     "@types/node": "^20.2.5",
     "@types/nodemailer": "^6.4.8",
     "@types/pg": "^8.10.2",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "nodemon": "^2.0.22",
+    "prettier": "^3.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.3"
   }

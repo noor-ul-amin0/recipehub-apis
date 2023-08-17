@@ -13,7 +13,7 @@ export interface JwtPayloadWithVerifyEmailUser extends JwtPayload {
 export async function authenticate(
   req: RequestWithUser,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const token = getBearerToken(req);
 

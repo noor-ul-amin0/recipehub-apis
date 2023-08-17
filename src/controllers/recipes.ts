@@ -10,7 +10,7 @@ class RecipeController {
       const { slug } = req.params;
       const recipe = await recipeRepository.findBySlug(
         req.user?.id as number,
-        slug
+        slug,
       );
       res.status(200).send({ success: true, data: recipe });
     } catch (error: any) {
@@ -27,7 +27,7 @@ class RecipeController {
       if (search) {
         recipes = await recipeRepository.findBySearchQuery(
           search as string,
-          userId
+          userId,
         );
       } else {
         recipes = await recipeRepository.findAll(userId);

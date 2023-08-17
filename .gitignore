@@ -1,8 +1,24 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Node.js and npm
+node_modules/
+npm-debug.log
+yarn-error.log
 
-# dependencies
-/node_modules
+# TypeScript build output
+dist/
 
+# Logs
+*.log
 
-# local env files
+# Environment variables
 .env
+
+# macOS system files
+.DS_Store
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Compiled files
+*.js
+*.map

@@ -98,10 +98,15 @@ class UsersController {
       // Create a new user
       await userRepository.create(newUser);
 
+      // res.status(201).send({
+      //   success: true,
+      //   message:
+      //     "A verification email has been sent to your email address. Please verify it.",
+      // });
+
       res.status(201).send({
         success: true,
-        message:
-          "A verification email has been sent to your email address. Please verify it.",
+        data: payload,
       });
     } catch (error) {
       res.status(500).send({ success: false, message: error });
