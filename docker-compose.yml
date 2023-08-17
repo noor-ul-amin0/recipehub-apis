@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  server:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on: [postgres]
+    volumes:
+      - .:/app
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5454:5432
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      # POSTGRES_HOST_AUTH_METHOD: trust # For local development only, use stronger auth methods in production
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data: {}
