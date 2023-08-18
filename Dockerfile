@@ -22,4 +22,4 @@ RUN npm install
 EXPOSE 8080
 
 # Specify the command to run when the container starts
-CMD [ "npm","run","dev" ]
+CMD [ "npm","start" ]
