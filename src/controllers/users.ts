@@ -98,11 +98,6 @@ class UsersController {
       // Create a new user
       await userRepository.create(newUser);
 
-      res.status(201).send({
-        success: true,
-        data: payload,
-      });
-
       // res.status(201).send({
       //   success: true,
       //   message:
